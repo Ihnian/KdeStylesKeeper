@@ -6,6 +6,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QPushButton, QLabel,QFileDialog
 from PySide6.QtCore import Slot
 from PySide6 import QtCore, QtWidgets, QtGui
+import os
 
 #Main class
 class App(QtWidgets.QWidget):
@@ -45,17 +46,23 @@ class App(QtWidgets.QWidget):
     
         home_dir = Path.home()
         destination = self.direction
-        
+        print
         desktoptheme = pathlib.Path("/usr/share/plasma/desktoptheme/")
         look_and_feel = pathlib.Path(f"{home_dir}/.local/share/plasma/look-and-feel/")
-
+        desktoptheme_folder = os.path.join(destination, "desktop_theme")
+        os.makedirs(desktoptheme_folder, exist_ok=True)
+        look_and_feel_folder = os.path.join(destination, "look-and-feel")
+        os.makedirs(look_and_feel_folder, exist_ok=True)
         if (destination == ""):
-            self.text.setText("Please choose a folder")
-
-        shutil.copytree(desktoptheme, destination, dirs_exist_ok=True)
-        shutil.copytree(look_and_feel, destination, dirs_exist_ok=True)
+            alert = QtWidgets.QLabel("Please choose folder")
+            alert.show()
         
-        self.text.setText("Done")
+        os.makedirs(destination, exist_ok=True)
+
+        shutil.copytree(desktoptheme, desktoptheme_folder, dirs_exist_ok=True)
+        shutil.copytree(look_and_feel, look_and_feel_folder, dirs_exist_ok=True)
+        
+        self.label.setText("Done")
 
 
 
