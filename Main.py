@@ -49,16 +49,21 @@ class App(QtWidgets.QWidget):
         print
         desktoptheme = pathlib.Path("/usr/share/plasma/desktoptheme/")
         look_and_feel = pathlib.Path(f"{home_dir}/.local/share/plasma/look-and-feel/")
+        kdeglobals = pathlib.Path(f"{home_dir}/.config/kdeglobals")
+        plasmarc = pathlib.Path(f"{home_dir}/.config/plasmarc")
+        
         desktoptheme_folder = os.path.join(destination, "desktop_theme")
         os.makedirs(desktoptheme_folder, exist_ok=True)
         look_and_feel_folder = os.path.join(destination, "look-and-feel")
         os.makedirs(look_and_feel_folder, exist_ok=True)
+        config_folder = os.path.join(destination, "Config")
+        os.makedirs(config_folder, exist_ok=True)
         if (destination == ""):
             alert = QtWidgets.QLabel("Please choose folder")
             alert.show()
         
-        os.makedirs(destination, exist_ok=True)
-
+        shutil.copy(kdeglobals, config_folder)
+        shutil.copy(plasmarc, config_folder)
         shutil.copytree(desktoptheme, desktoptheme_folder, dirs_exist_ok=True)
         shutil.copytree(look_and_feel, look_and_feel_folder, dirs_exist_ok=True)
         
