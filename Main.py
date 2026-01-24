@@ -4,19 +4,23 @@ import pathlib
 from pathlib import Path
 import sys
 from PySide6.QtWidgets import QApplication, QPushButton, QLabel,QFileDialog
-from PySide6.QtCore import Slot
 from PySide6 import QtCore, QtWidgets, QtGui
 import os
-import threading
+
 
 #Main class
-class App(QtWidgets.QWidget):
+class App(QtWidgets.QWidget, QtCore.QThread):
+    progress =  QtCore.Signal()
+    finished = QtCore.Signal()
     #Layout
     def __init__(self):
         super().__init__()
         #none direction
         self.direction = ""
         self.value = 0
+        self.UI()
+    
+    def UI(self):
         #Ui components
         self.progressbar = QtWidgets.QProgressBar(value=self.value, maximum=100)
         self.direction_button = QtWidgets.QPushButton("Choose directory")
@@ -32,8 +36,13 @@ class App(QtWidgets.QWidget):
         self.layout.addWidget(self.progressbar)
         #button clicked
         self.direction_button.clicked.connect(self.get_direction)
-        self.copy_button.clicked.connect(self.cloning)
+        self.copy_button.clicked.connect(self.Clone_thread)
 
+    @QtCore.Slot()
+    def Clone_thread(self):
+        self.thread = QtCore.QThread()
+        self.thread.run = self.cloning
+        self.thread.start()
     #geting copy direction
     @QtCore.Slot()
     def get_direction(self):
@@ -42,14 +51,13 @@ class App(QtWidgets.QWidget):
             "choose folder for copy"
         )
         
-        
+    
     #cloning files
     @QtCore.Slot()
     def cloning(self):
-    
+        
         home_dir = Path.home()
         destination = self.direction
-
         if (destination == ""):
             alert = QtWidgets.QLabel("Please choose folder")
             alert.show()
@@ -89,6 +97,7 @@ class App(QtWidgets.QWidget):
             self.value = 100
             
             self.label.setText("Done")
+        self.finished.emit()
 
 
 
