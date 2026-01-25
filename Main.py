@@ -17,12 +17,11 @@ class App(QtWidgets.QWidget, QtCore.QThread):
         super().__init__()
         #none direction
         self.direction = ""
-        self.value = 0
         self.UI()
     
     def UI(self):
         #Ui components
-        self.progressbar = QtWidgets.QProgressBar(value=self.value, maximum=100)
+        self.progressbar = QtWidgets.QProgressBar(value=0, maximum=100)
         self.direction_button = QtWidgets.QPushButton("Choose directory")
         self.copy_button = QtWidgets.QPushButton("Copy")
         self.label = QtWidgets.QLabel("choose direction",
@@ -43,6 +42,7 @@ class App(QtWidgets.QWidget, QtCore.QThread):
         self.thread = QtCore.QThread()
         self.thread.run = self.cloning
         self.thread.start()
+            
     #geting copy direction
     @QtCore.Slot()
     def get_direction(self):
@@ -66,13 +66,13 @@ class App(QtWidgets.QWidget, QtCore.QThread):
             desktoptheme_folder = os.path.join(destination, "desktop_theme")
             os.makedirs(desktoptheme_folder, exist_ok=True)
             shutil.copytree(desktoptheme, desktoptheme_folder, dirs_exist_ok=True)
-            self.value = 15
+            self.progressbar.setValue(15)
 
             look_and_feel_folder = os.path.join(destination, "look-and-feel")
             look_and_feel = pathlib.Path(f"{home_dir}/.local/share/plasma/look-and-feel/")
             os.makedirs(look_and_feel_folder, exist_ok=True)
             shutil.copytree(look_and_feel, look_and_feel_folder, dirs_exist_ok=True)
-            self.value = 35
+            self.progressbar.setValue(30)
 
             kdeglobals = pathlib.Path(f"{home_dir}/.config/kdeglobals")
             appletsrc = pathlib.Path(f"{home_dir}/.config/plasma-org.kde.plasma.desktop-appletsrc")
@@ -82,19 +82,19 @@ class App(QtWidgets.QWidget, QtCore.QThread):
             shutil.copy(kdeglobals, config_folder)
             shutil.copy(plasmarc, config_folder)
             shutil.copy(appletsrc, config_folder)
-            self.value = 70
+            self.progressbar.setValue(55)
 
             icons  = pathlib.Path(f"{home_dir}/.local/share/icons/")
             icons_folder = os.path.join(destination, "Icons")
             os.makedirs(icons_folder, exist_ok=True)
             shutil.copytree(icons, icons_folder, dirs_exist_ok=True)
-            self.value = 85
+            self.progressbar.setValue(80)
             
             plasmoid = pathlib.Path(f"{home_dir}/.local/share/plasma/plasmoids/")
             plasmoid_folder = os.path.join(destination, "plasmoid")
             os.makedirs(plasmoid_folder, exist_ok=True)
             shutil.copytree(plasmoid, plasmoid_folder, dirs_exist_ok=True)
-            self.value = 100
+            self.progressbar.setValue(100)
             
             self.label.setText("Done")
         self.finished.emit()
