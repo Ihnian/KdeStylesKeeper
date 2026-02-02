@@ -39,7 +39,7 @@ class App(QtWidgets.QWidget, QtCore.QThread):
         self.layout.addWidget(self.copy_button)
         #button clicked
         if not self.thread.isRunning():
-            self.copy_button.clicked.connect(self.test)
+            self.copy_button.clicked.connect(self.Clone_thread)
             #self.copy_button.clicked.connect(self.Clone_thread)
         self.direction_button.clicked.connect(self.get_direction)
         
@@ -68,31 +68,42 @@ class App(QtWidgets.QWidget, QtCore.QThread):
             self,
             "choose folder for copy"
         )
-        
-    @QtCore.Slot()
-    def test(self):
-        file_destination = self.direction
-        file_name = "PATHS.txt"
-        file_path = os.path.join(file_destination, file_name)
-
-        with open(file_path, "w") as f:
-            f.write("")
-    
     #cloning files
     @QtCore.Slot()
     def cloning(self):
-        
         home_dir = Path.home()
         destination = self.direction
         if (destination == ""):
             alert = QtWidgets.QLabel("Please choose folder")
             alert.show()
         else:
+            #creating PATHS.txt
+            file_name = "PATHS.txt"
+            file_path = os.path.join(destination, file_name)
+
+            with open(file_path, "w") as f:
+                f.write("""This file contain path to copied files
+             
+-Desktop_theme:
+/usr/share/plasma/desktoptheme/
+
+-Look and feel:
+.local/share/plasma/look-and-feel/
+
+-Config files:
+.config/
+
+-Icons:
+.local/share/icons/
+                    
+-Plasmoids:
+.local/share/plasma/plasmoids/""")
+            self.progressbar.setValue(5)
             #coping desktoptheme
             desktoptheme = pathlib.Path("/usr/share/plasma/desktoptheme/")
             desktoptheme_folder = os.path.join(destination, "desktop_theme")
             os.makedirs(desktoptheme_folder, exist_ok=True)
-            self.progressbar.setValue(5)
+            self.progressbar.setValue(10)
             shutil.copytree(desktoptheme, desktoptheme_folder, dirs_exist_ok=True)
             self.progressbar.setValue(15)
 
@@ -131,6 +142,7 @@ class App(QtWidgets.QWidget, QtCore.QThread):
             self.progressbar.setValue(90)
             shutil.copytree(plasmoid, plasmoid_folder, dirs_exist_ok=True)
             self.progressbar.setValue(100)
+
             
             self.label.setText("Done")
         self.finished.emit()
